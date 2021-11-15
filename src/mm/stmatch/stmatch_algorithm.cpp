@@ -11,7 +11,6 @@ using namespace FMM;
 using namespace FMM::CORE;
 using namespace FMM::NETWORK;
 using namespace FMM::MM;
-using namespace FMM::PYTHON;
 
 STMATCHConfig::STMATCHConfig(
   int k_arg, double r_arg, double gps_error_arg,
@@ -90,37 +89,6 @@ bool STMATCHConfig::validate() const {
   }
   return true;
 }
-
-PyMatchResult STMATCH::match_wkt(
-  const std::string &wkt, const STMATCHConfig &config) {
-  LineString line = wkt2linestring(wkt);
-  std::vector<double> timestamps;
-  Trajectory traj{0, line, timestamps};
-  MatchResult result = match_traj(traj, config);
-  PyMatchResult output;
-  output.id = result.id;
-  output.opath = result.opath;
-  output.cpath = result.cpath;
-  output.mgeom = result.mgeom;
-  output.indices = result.indices;
-  for (int i = 0; i < result.opt_candidate_path.size(); ++i) {
-    const MatchedCandidate &mc = result.opt_candidate_path[i];
-    output.candidates.push_back(
-      {i,
-       mc.c.edge->id,
-       graph_.get_node_id(mc.c.edge->source),
-       graph_.get_node_id(mc.c.edge->target),
-       mc.c.dist,
-       mc.c.offset,
-       mc.c.edge->length,
-       mc.ep,
-       mc.tp,
-       mc.sp_dist}
-      );
-    output.pgeom.add_point(mc.c.point);
-  }
-  return output;
-};
 
 // Procedure of HMM based map matching algorithm.
 MatchResult STMATCH::match_traj(const Trajectory &traj,

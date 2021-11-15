@@ -26,7 +26,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 project(fmm)
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "-O3 -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
+set(CMAKE_CXX_FLAGS "-O3 -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE -EHsc")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
@@ -51,9 +51,9 @@ endif (GDAL_FOUND)
 link_libraries(${GDAL_LIBRARIES})
 
 if (WIN32)
-  find_package(Boost 1.56.0 REQUIRED serialization exception)
+  find_package(Boost REQUIRED serialization exception)
 else ()
-  find_package(Boost 1.56.0 REQUIRED serialization)
+  find_package(Boost REQUIRED serialization)
 endif (WIN32)
 if (Boost_FOUND)
   message(STATUS "Boost headers found at ${Boost_INCLUDE_DIR}")
@@ -79,6 +79,8 @@ link_libraries(${OpenMP_CXX_LIBRARIES})
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+set(CMAKE_INSTALL_PREFIX ../build)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
@@ -119,13 +121,13 @@ add_library(IO OBJECT ${IOGlob})
 add_library(UTIL OBJECT ${UtilGlob})
 add_library(NETWORK OBJECT ${NetworkGlob})
 add_library(MM_OBJ OBJECT ${MMGlob})
-add_library(FMM_OBJ OBJECT ${FMMGlob})
+#add_library(FMM_OBJ OBJECT ${FMMGlob})
 add_library(STMATCH_OBJ OBJECT ${STMATCHGlob})
 add_library(H3_OBJ OBJECT ${h3Glob})
 
 add_library(FMMLIB SHARED
   $<TARGET_OBJECTS:MM_OBJ>
-  $<TARGET_OBJECTS:FMM_OBJ>
+#  $<TARGET_OBJECTS:FMM_OBJ>
   $<TARGET_OBJECTS:STMATCH_OBJ>
   $<TARGET_OBJECTS:CORE>
   $<TARGET_OBJECTS:CONFIG>
@@ -137,11 +139,11 @@ add_library(FMMLIB SHARED
 
 # Add executables
 
-add_executable(fmm src/app/fmm.cpp)
-target_link_libraries(fmm FMMLIB)
-
-add_executable(ubodt_gen src/app/ubodt_gen_app.cpp)
-target_link_libraries(ubodt_gen FMMLIB)
+#add_executable(fmm src/app/fmm.cpp)
+#target_link_libraries(fmm FMMLIB)
+#
+#add_executable(ubodt_gen src/app/ubodt_gen_app.cpp)
+#target_link_libraries(ubodt_gen FMMLIB)
 
 add_executable(stmatch src/app/stmatch.cpp)
 target_link_libraries(stmatch FMMLIB)
@@ -153,8 +155,10 @@ message(STATUS "Installation folder ${CMAKE_INSTALL_PREFIX}")
 
 install(TARGETS FMMLIB LIBRARY DESTINATION lib)
 
-install(TARGETS fmm ubodt_gen stmatch h3mm DESTINATION bin)
+#install(TARGETS fmm ubodt_gen stmatch h3mm DESTINATION bin)
+install(TARGETS stmatch h3mm DESTINATION bin)
 
+set(FMM_INSTALL_HEADER true)
 if(FMM_INSTALL_HEADER)
   message(STATUS "Install fmm headers")
   set(FMM_DIST_INCLUDE_PATH
@@ -194,5 +198,4 @@ endif()
 
 message(STATUS "Add python cmake information")
 
-add_subdirectory(python)
 # add_subdirectory(test EXCLUDE_FROM_ALL)
