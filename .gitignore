@@ -5,6 +5,7 @@ output/
 dist/
 test/bin/
 test/log/
+install/
 
 # Doc files
 
