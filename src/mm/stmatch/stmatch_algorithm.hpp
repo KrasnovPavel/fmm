@@ -14,7 +14,6 @@
 #include "mm/composite_graph.hpp"
 #include "mm/transition_graph.hpp"
 #include "mm/mm_type.hpp"
-#include "python/pyfmm.hpp"
 #include "config/gps_config.hpp"
 #include "config/result_config.hpp"
 
@@ -90,14 +89,6 @@ public:
   STMATCH(const NETWORK::Network &network, const NETWORK::NetworkGraph &graph) :
     network_(network), graph_(graph) {
   };
-  /**
-   * Match a wkt linestring to the road network.
-   * @param wkt WKT representation of a trajectory
-   * @param config Map matching configuration
-   * @return Map matching result in POD format used in Python API
-   */
-  PYTHON::PyMatchResult match_wkt(
-    const std::string &wkt,const STMATCHConfig &config);
   /**
    * Match a trajectory to the road network
    * @param  traj   input trajector data
